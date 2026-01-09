@@ -16,6 +16,47 @@
 
 <body>
   <div id="root"></div>
+
+  <!-- Runtime error overlay: captures uncaught errors and unhandled promise rejections so the page
+       shows a readable error instead of a blank screen while we debug the deployed app. -->
+  <script>
+    (function(){
+      function showError(err){
+        try{
+          var pre = document.createElement('pre');
+          pre.style = 'white-space:pre-wrap;background:#2b2b2b;color:#fff;padding:1rem;margin:1rem;border-radius:6px;font-family:monospace;max-height:70vh;overflow:auto';
+          var msg = '';
+          if (typeof err === 'string') msg = err;
+          else if (err && err.stack) msg = err.stack;
+          else try { msg = JSON.stringify(err, null, 2); } catch(e){ msg = String(err); }
+          pre.textContent = msg;
+
+          var container = document.getElementById('root') || document.body;
+          container.innerHTML = '';
+
+          var box = document.createElement('div');
+          box.style = 'padding:1rem;font-family:system-ui,Segoe UI,Roboto,-apple-system;';
+          box.innerHTML = '<h2 style="color:#ff6b6b;margin:0 0 .5rem 0">Runtime error — details below</h2>' +
+                          '<p style="margin:0 0 1rem 0;color:#ddd">If you see this, the app failed to mount or a runtime exception occurred during startup.</p>';
+          container.appendChild(box);
+          container.appendChild(pre);
+        }catch(e){
+          try{ document.body.innerText = 'Fatal error: ' + e; } catch(ee){ /* ignore */ }
+        }
+      }
+
+      window.addEventListener('error', function(e){ showError(e.error || e.message || e); });
+      window.addEventListener('unhandledrejection', function(e){ showError(e.reason || e); });
+
+      // Also catch synchronous failures while loading the module by wrapping module script execution is not
+      // always possible, but this overlay will catch most runtime errors and promise rejections.
+    })();
+  </script>
+
+  <noscript>
+    <div style="padding:1rem;color:#111;background:#fff;border:1px solid #ddd">JavaScript is required to run this site. Please enable JavaScript in your browser.</div>
+  </noscript>
+
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

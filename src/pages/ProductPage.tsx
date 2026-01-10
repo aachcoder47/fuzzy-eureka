@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Product } from '../lib/supabase';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import * as Icons from 'lucide-react';
-import { Check, AlertCircle, ArrowLeft, Star, Shield, ArrowRight, Play, Calendar } from 'lucide-react';
+import { Check, AlertCircle, ArrowLeft, Shield, ArrowRight, Play, Calendar } from 'lucide-react';
 import AuthModal from '../components/AuthModal';
 import { billingService } from '../services/billing.service';
 
@@ -368,27 +368,6 @@ export default function ProductPage({ productSlug, onNavigate }: ProductPageProp
               </div>
             )}
 
-            {/* Testimonial (Mock) */}
-            <div className="bg-slate-900 text-white p-8 rounded-3xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-12 opacity-10">
-                <Icons.Quote size={120} />
-              </div>
-              <div className="relative z-10">
-                <div className="flex space-x-1 mb-6 text-yellow-500">
-                  {[1, 2, 3, 4, 5].map(i => <Star key={i} size={20} fill="currentColor" />)}
-                </div>
-                <p className="text-xl font-medium leading-relaxed mb-6">
-                  "Use this product to completely automate your workflow. It has saved us hundreds of hours and significantly improved our ROI. Highly recommended!"
-                </p>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-xl font-bold">JD</div>
-                  <div>
-                    <div className="font-bold">John Doe</div>
-                    <div className="text-slate-400 text-sm">CTO at TechCorp</div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: Pricing */}

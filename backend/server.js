@@ -3,7 +3,13 @@ import cors from 'cors';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '../.env' });
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = 3100;
@@ -16,6 +22,11 @@ function generatePayuHash(data, salt) {
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
         `${data.firstname}|${data.email}|||||||||||${salt}`;
+
+    console.log('--- Debugging Hash Generation ---');
+    console.log('Salt used:', salt);
+    console.log('Hash String:', hashString);
+    console.log('---------------------------------');
 
     return crypto
         .createHash('sha512')

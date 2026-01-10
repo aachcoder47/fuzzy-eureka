@@ -3,21 +3,25 @@ import crypto from 'crypto';
 // Generate PayU hash securely
 function generatePayuHash(data: any, salt: string) {
     // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
-    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes after udf1)
-    // CRITICAL: Must have exactly 9 pipes after udf1 (one for each of udf2-udf10) = 16 total pipes
+    const amount = parseFloat(data.amount).toFixed(2);
+
+    // CRITICAL: Must have exactly 16 pipes total (10 pipes after udf1)
     const hashString =
-        `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
+        `${data.key}|${data.txnid}|${amount}|${data.productinfo}|` +
         `${data.firstname}|${data.email}|${data.udf1 || ''}||||||||||${salt}`;
 
-    console.log('Hash String:', hashString); // Debug log
-    console.log('Pipe count:', (hashString.match(/\|/g) || []).length); // Should be 16
+    const pipeCount = (hashString.match(/\|/g) || []).length;
+    console.log('Hash String:', hashString);
+    console.log('Pipe count:', pipeCount);
+
+    if (pipeCount !== 16) {
+        console.error('ERROR: Hash string has incorrect number of pipes!');
+    }
 
     const hash = crypto
         .createHash('sha512')
         .update(hashString)
         .digest('hex');
-
-    console.log('Generated Hash:', hash); // Debug log
 
     return hash;
 }
@@ -51,17 +55,17 @@ export default async function handler(req: any, res: any) {
         }
 
         // Determine amount based on plan
-        let amount = 2;
+        let amountNum = 2;
         let productInfo = "7-Day Trial Setup Fee";
 
         if (planId === 'plan_trial_2inr') {
-            amount = 2;
+            amountNum = 2;
             productInfo = "7-Day Trial Setup Fee";
         } else if (planId.includes('monthly')) {
-            amount = 2999;
+            amountNum = 2999;
             productInfo = "Monthly Subscription";
         } else if (planId.includes('yearly')) {
-            amount = 29990;
+            amountNum = 29990;
             productInfo = "Yearly Subscription";
         }
 
@@ -70,13 +74,13 @@ export default async function handler(req: any, res: any) {
         const firstname = email.split('@')[0];
 
         // Get the origin from the request
-        const origin = req.headers.origin || req.headers.referer || 'https://your-app.vercel.app';
+        const origin = req.headers.origin || req.headers.referer || 'http://localhost:5173';
 
         // Prepare payment data
         const paymentData = {
             key: merchantKey,
             txnid,
-            amount: amount.toString(),
+            amount: amountNum.toFixed(2),
             productinfo: productInfo,
             firstname,
             email,
@@ -99,12 +103,6 @@ export default async function handler(req: any, res: any) {
 
         // Generate secure hash
         const hash = generatePayuHash(paymentData, salt);
-
-        console.log('Payment Data:', {
-            ...paymentData,
-            key: merchantKey.substring(0, 3) + '***', // Mask sensitive data
-            hash: hash.substring(0, 10) + '...'
-        });
 
         // Return payment form data
         res.status(200).json({

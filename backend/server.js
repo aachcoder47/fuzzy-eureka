@@ -30,23 +30,31 @@ app.use((req, res, next) => {
 // Generate PayU hash securely on backend
 function generatePayuHash(data, salt) {
     // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
-    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes after udf1)
-    // CRITICAL: Must have exactly 9 pipes after udf1 (one for each of udf2-udf10)
+    // Formatted amount to 2 decimal places as common in many payment gateways
+    const amount = parseFloat(data.amount).toFixed(2);
+
+    // CRITICAL: Must have exactly 16 pipes total (10 pipes after udf1)
     const hashString =
-        `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
+        `${data.key}|${data.txnid}|${amount}|${data.productinfo}|` +
         `${data.firstname}|${data.email}|${data.udf1 || ''}||||||||||${salt}`;
+
+    const pipeCount = (hashString.match(/\|/g) || []).length;
 
     console.log('--- Debugging Hash Generation ---');
     console.log('Merchant Key:', data.key);
     console.log('Transaction ID:', data.txnid);
-    console.log('Amount:', data.amount);
+    console.log('Amount (Formatted):', amount);
     console.log('Product Info:', data.productinfo);
     console.log('First Name:', data.firstname);
     console.log('Email:', data.email);
     console.log('UDF1 (Plan ID):', data.udf1);
-    console.log('Salt used:', salt ? 'Present' : 'Missing');
+    console.log('Pipe Count:', pipeCount);
     console.log('Hash String:', hashString);
     console.log('---------------------------------');
+
+    if (pipeCount !== 16) {
+        console.error('ERROR: Hash string has incorrect number of pipes!');
+    }
 
     const hash = crypto
         .createHash('sha512')
@@ -95,13 +103,13 @@ app.post('/api/payu/initiate', (req, res) => {
         const paymentData = {
             key: merchantKey,
             txnid,
-            amount: amount.toString(),
+            amount: parseFloat(amount).toFixed(2), // Consistently use 2 decimal places
             productinfo: productInfo,
             firstname,
             email,
             phone: phone || '9999999999',
-            surl: process.env.VITE_APP_URL || 'http://localhost:5174' + '/payment-success',
-            furl: process.env.VITE_APP_URL || 'http://localhost:5174' + '/payment-failure',
+            surl: process.env.VITE_APP_URL || 'http://localhost:5173' + '/payment-success',
+            furl: process.env.VITE_APP_URL || 'http://localhost:5173' + '/payment-failure',
             service_provider: 'payu_paisa',
             si: '1',  // Enable Standing Instructions for recurring payments
             udf1: planId || '' // Store plan ID for reference

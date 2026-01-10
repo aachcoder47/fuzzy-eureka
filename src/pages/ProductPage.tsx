@@ -473,18 +473,25 @@ export default function ProductPage({ productSlug, onNavigate }: ProductPageProp
                       Currently Active
                     </div>
                   ) : (
-                    <button
-                      onClick={handleSubscribe}
-                      disabled={subscribing}
-                      className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    >
-                      {subscribing
-                        ? 'Processing...'
-                        : (product.trial_days && product.trial_days > 0)
-                          ? `Start ${product.trial_days}-Day Trial`
-                          : 'Get Started Now'
-                      }
-                    </button>
+                    <div>
+                      <button
+                        onClick={handleSubscribe}
+                        disabled={subscribing}
+                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        {subscribing
+                          ? 'Processing...'
+                          : (product.trial_days && product.trial_days > 0)
+                            ? `Start ${product.trial_days}-Day Free Trial • Pay ₹2`
+                            : 'Get Started Now'
+                        }
+                      </button>
+                      {(product.trial_days && product.trial_days > 0) && (
+                        <p className="text-xs text-gray-500 text-center mt-3">
+                          Pay <strong>₹2 refundable fee</strong> now to verify card. Recurring billing starts after {product.trial_days} days.
+                        </p>
+                      )}
+                    </div>
                   )}
                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500">Secure payment via PayU</p>

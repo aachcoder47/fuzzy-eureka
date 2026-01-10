@@ -92,8 +92,8 @@ export default function PaymentSuccess({ onNavigate }: PaymentSuccessProps) {
                         <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                             <Check size={32} className="text-green-600" />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
-                        <p className="text-gray-600 mb-4">Your subscription has been activated.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Success!</h2>
+                        <p className="text-gray-600 mb-4">Your plan has been activated successfully.</p>
                         <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
                     </>
                 )}

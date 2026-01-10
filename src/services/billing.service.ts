@@ -24,7 +24,8 @@ export const billingService = {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to initiate payment');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Payment initiation failed with status: ${response.status}`);
             }
 
             const { action, fields } = await response.json();

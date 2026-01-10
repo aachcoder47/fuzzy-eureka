@@ -4,7 +4,7 @@ import crypto from 'crypto';
 function generatePayuHash(data: any, salt: string) {
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
-        `${data.firstname}|${data.email}|||||||||||${salt}`;
+        `${data.firstname}|${data.email}|${data.udf1}|||||||||${salt}`;
 
     return crypto
         .createHash('sha512')
@@ -73,7 +73,9 @@ export default async function handler(req: any, res: any) {
             phone: phone || '9999999999',
             surl: origin + '/payment-success',
             furl: origin + '/payment-failure',
-            service_provider: 'payu_paisa'
+            service_provider: 'payu_paisa',
+            si: '1',  // Enable Standing Instructions for recurring payments
+            udf1: planId // Store plan ID for reference
         };
 
         // Generate secure hash

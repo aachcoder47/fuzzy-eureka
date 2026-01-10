@@ -85,16 +85,14 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <h2 className="text-4xl font-bold mb-6">Need Something Custom?</h2>
           <p className="text-xl text-slate-300 mb-8">
             Looking for enterprise features, custom AI bots, or private deployments?
-            Let's talk about building something unique for your business.
+            Book a free demo to discuss your unique business needs.
           </p>
-          <a
-            href="https://form.typeform.com/to/DDS88AsN"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => onNavigate('booking')}
             className="inline-block bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
           >
-            Request Custom Solution
-          </a>
+            Book Free Consultation
+          </button>
         </div>
       </section>
 

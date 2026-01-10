@@ -7,9 +7,10 @@ import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/ProfilePage';
 import SupportPage from './pages/SupportPage';
 import PaymentSuccess from './pages/PaymentSuccess';
+import BookingPage from './pages/BookingPage';
 import WhatsAppButton from './components/WhatsAppButton';
 
-type Page = 'home' | 'product' | 'dashboard' | 'profile' | 'support' | 'payment-success';
+type Page = 'home' | 'product' | 'dashboard' | 'profile' | 'support' | 'payment-success' | 'booking';
 
 function App() {
   // Check URL path for initial page state (needed for payment callbacks)
@@ -38,6 +39,8 @@ function App() {
       setCurrentPage('profile');
     } else if (page === 'support') {
       setCurrentPage('support');
+    } else if (page === 'booking') {
+      setCurrentPage('booking');
     } else if (page === 'payment-success') {
       // Clear URL query params if any
       window.history.replaceState({}, '', '/payment-success');
@@ -56,6 +59,7 @@ function App() {
         {currentPage === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
         {currentPage === 'profile' && <ProfilePage />}
         {currentPage === 'support' && <SupportPage />}
+        {currentPage === 'booking' && <BookingPage onNavigate={handleNavigate} />}
         {currentPage === 'payment-success' && <PaymentSuccess onNavigate={handleNavigate} />}
         <WhatsAppButton />
       </div>

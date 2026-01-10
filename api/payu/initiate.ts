@@ -3,12 +3,14 @@ import crypto from 'crypto';
 // Generate PayU hash securely
 function generatePayuHash(data: any, salt: string) {
     // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
-    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes)
+    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes after udf1)
+    // CRITICAL: Must have exactly 9 pipes after udf1 (one for each of udf2-udf10) = 16 total pipes
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
-        `${data.firstname}|${data.email}|${data.udf1 || ''}|||||||||${salt}`;
+        `${data.firstname}|${data.email}|${data.udf1 || ''}||||||||||${salt}`;
 
     console.log('Hash String:', hashString); // Debug log
+    console.log('Pipe count:', (hashString.match(/\|/g) || []).length); // Should be 16
 
     const hash = crypto
         .createHash('sha512')

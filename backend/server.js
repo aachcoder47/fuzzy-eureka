@@ -17,13 +17,24 @@ const PORT = 3100;
 app.use(cors());
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`\n📨 ${req.method} ${req.path}`);
+    console.log('Headers:', req.headers);
+    if (req.body && Object.keys(req.body).length > 0) {
+        console.log('Body:', req.body);
+    }
+    next();
+});
+
 // Generate PayU hash securely on backend
 function generatePayuHash(data, salt) {
     // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
-    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes)
+    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes after udf1)
+    // CRITICAL: Must have exactly 9 pipes after udf1 (one for each of udf2-udf10)
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
-        `${data.firstname}|${data.email}|${data.udf1 || ''}|||||||||${salt}`;
+        `${data.firstname}|${data.email}|${data.udf1 || ''}||||||||||${salt}`;
 
     console.log('--- Debugging Hash Generation ---');
     console.log('Merchant Key:', data.key);

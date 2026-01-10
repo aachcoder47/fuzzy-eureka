@@ -19,19 +19,32 @@ app.use(express.json());
 
 // Generate PayU hash securely on backend
 function generatePayuHash(data, salt) {
+    // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
+    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes)
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
-        `${data.firstname}|${data.email}|||||||||||${salt}`;
+        `${data.firstname}|${data.email}|${data.udf1 || ''}|||||||||${salt}`;
 
     console.log('--- Debugging Hash Generation ---');
-    console.log('Salt used:', salt);
+    console.log('Merchant Key:', data.key);
+    console.log('Transaction ID:', data.txnid);
+    console.log('Amount:', data.amount);
+    console.log('Product Info:', data.productinfo);
+    console.log('First Name:', data.firstname);
+    console.log('Email:', data.email);
+    console.log('UDF1 (Plan ID):', data.udf1);
+    console.log('Salt used:', salt ? 'Present' : 'Missing');
     console.log('Hash String:', hashString);
     console.log('---------------------------------');
 
-    return crypto
+    const hash = crypto
         .createHash('sha512')
         .update(hashString)
         .digest('hex');
+
+    console.log('Generated Hash:', hash);
+
+    return hash;
 }
 
 // API endpoint to initiate payment

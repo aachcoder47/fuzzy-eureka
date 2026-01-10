@@ -91,11 +91,26 @@ app.post('/api/payu/initiate', (req, res) => {
             phone: phone || '9999999999',
             surl: process.env.VITE_APP_URL || 'http://localhost:5174' + '/payment-success',
             furl: process.env.VITE_APP_URL || 'http://localhost:5174' + '/payment-failure',
-            service_provider: 'payu_paisa'
+            service_provider: 'payu_paisa',
+            si: '1',  // Enable Standing Instructions for recurring payments
+            udf1: planId || '' // Store plan ID for reference
         };
+
+        // Validate required fields
+        const requiredFields = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email'];
+        for (const field of requiredFields) {
+            if (!paymentData[field]) {
+                console.error(`Missing required field: ${field}`);
+                return res.status(400).json({ error: `Missing required field: ${field}` });
+            }
+        }
 
         // Generate secure hash on backend
         const hash = generatePayuHash(paymentData, salt);
+
+        console.log('✅ Payment initiation successful');
+        console.log('Plan ID:', planId);
+        console.log('Amount:', amount);
 
         // Return payment form data to frontend
         res.json({
@@ -107,8 +122,11 @@ app.post('/api/payu/initiate', (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error initiating payment:', error);
-        res.status(500).json({ error: 'Failed to initiate payment' });
+        console.error('❌ Error initiating payment:', error);
+        res.status(500).json({
+            error: 'Failed to initiate payment',
+            details: error.message
+        });
     }
 });
 

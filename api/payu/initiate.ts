@@ -2,14 +2,22 @@ import crypto from 'crypto';
 
 // Generate PayU hash securely
 function generatePayuHash(data: any, salt: string) {
+    // PayU hash formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
+    // Since we only use udf1, udf2-udf10 are empty (represented by 9 consecutive pipes)
     const hashString =
         `${data.key}|${data.txnid}|${data.amount}|${data.productinfo}|` +
-        `${data.firstname}|${data.email}|${data.udf1}|||||||||${salt}`;
+        `${data.firstname}|${data.email}|${data.udf1 || ''}|||||||||${salt}`;
 
-    return crypto
+    console.log('Hash String:', hashString); // Debug log
+
+    const hash = crypto
         .createHash('sha512')
         .update(hashString)
         .digest('hex');
+
+    console.log('Generated Hash:', hash); // Debug log
+
+    return hash;
 }
 
 export default async function handler(req: any, res: any) {

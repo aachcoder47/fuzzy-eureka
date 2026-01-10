@@ -83,11 +83,26 @@ export default async function handler(req: any, res: any) {
             furl: origin + '/payment-failure',
             service_provider: 'payu_paisa',
             si: '1',  // Enable Standing Instructions for recurring payments
-            udf1: planId // Store plan ID for reference
+            udf1: planId || '' // Store plan ID for reference
         };
+
+        // Validate required fields
+        const requiredFields = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email'];
+        for (const field of requiredFields) {
+            if (!paymentData[field as keyof typeof paymentData]) {
+                console.error(`Missing required field: ${field}`);
+                return res.status(400).json({ error: `Missing required field: ${field}` });
+            }
+        }
 
         // Generate secure hash
         const hash = generatePayuHash(paymentData, salt);
+
+        console.log('Payment Data:', {
+            ...paymentData,
+            key: merchantKey.substring(0, 3) + '***', // Mask sensitive data
+            hash: hash.substring(0, 10) + '...'
+        });
 
         // Return payment form data
         res.status(200).json({
@@ -100,6 +115,9 @@ export default async function handler(req: any, res: any) {
 
     } catch (error) {
         console.error('Error initiating payment:', error);
-        res.status(500).json({ error: 'Failed to initiate payment' });
+        res.status(500).json({
+            error: 'Failed to initiate payment',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 }

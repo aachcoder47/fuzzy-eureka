@@ -1,6 +1,6 @@
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
-import { Sparkles, Zap, Shield, TrendingUp } from 'lucide-react';
+import { Sparkles, Zap, Shield, TrendingUp, Quote } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (page: string, productSlug?: string) => void;
@@ -77,6 +77,38 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               onLearnMore={(slug) => onNavigate('product', slug)}
             />
           ))}
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="bg-white py-24 border-y border-slate-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+              Trusted by Tech Leaders
+            </h2>
+          </div>
+
+          <div className="relative bg-slate-50 rounded-3xl p-10 md:p-14 shadow-lg border border-slate-100 max-w-3xl mx-auto">
+            {/* Decorative Quote Icon */}
+            <div className="absolute -top-6 -left-6 bg-cyan-500 rounded-full p-4 shadow-lg">
+              <Quote size={24} className="text-white" />
+            </div>
+
+            <blockquote className="relative z-10 text-xl md:text-2xl text-slate-700 font-medium leading-relaxed mb-8">
+              "Use this product to completely automate your workflow. It has saved us hundreds of hours and significantly improved our ROI. Highly recommended!"
+            </blockquote>
+
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center text-slate-600 font-bold text-xl shadow-inner border-2 border-white">
+                JD
+              </div>
+              <div className="text-left">
+                <div className="font-bold text-slate-900 text-lg">John Doe</div>
+                <div className="text-cyan-600 font-medium">CTO at TechCorp</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
